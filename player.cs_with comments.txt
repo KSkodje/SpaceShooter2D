@@ -1,0 +1,150 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    // Declaring a variable:
+    // public or private reference
+    // data type (int, float, bool, string)
+    // every variable has a name
+    // optional value assigned
+    //public float speed = 3.5f; //the f is needed when it is a float value
+    [SerializeField]
+    private float _speed = 3.5f;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // take the current position = new postion (x, y, z); // new position (horizontal, vertical, forwardbackwards);
+        transform.position = new Vector3(0, 1, 0);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Vector3.right = new Vector3(1, 0, 0); moving it 1unit to the right
+        // 1 unit in unity is 1 meter in real life.
+        // done by multiplying with Time.deltaTime - result = one meter per second instead of one meter pr frame.
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        // transform.Translate(Vector3.left * Time.deltaTime * _speed * horizontalInput);
+        // transform.Translate(Vector3.up * Time.deltaTime * _speed * verticalInput);
+
+        // one line solution then made a bit clearer by adding the direction variable
+        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(direction * Time.deltaTime * _speed);
+
+
+    }
+}
+
+
+// updated
+public class Player : MonoBehaviour
+{
+    [SerializeField]
+    private float _speed = 3.5f;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        transform.position = new Vector3(0, 0, 0);
+    }
+
+    void Update()
+    {
+        CalculateMovement();
+    }
+
+    void CalculateMovement()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(direction * Time.deltaTime * _speed);
+
+
+        if (transform.position.y > 4.5f)
+        {
+            transform.position = new Vector3(transform.position.x, 4.5f, 0);
+        }
+        else if (transform.position.y <= -4.5f)
+        {
+            transform.position = new Vector3(transform.position.x, -4.5f, 0);
+        }
+
+        // using Clamping to set boundries (will not work when wrapping as done with the X axis)
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.5f, 4.5f));
+
+        if (transform.position.x >= 11.5f)
+        {
+            transform.position = new Vector3(-11.5f, transform.position.y, 0);
+        }
+        else if (transform.position.x <= -11.5f)
+        {
+            transform.position = new Vector3(11.5f, transform.position.y, 0);
+        }
+    }
+}
+
+// LASER FIRE
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    // SerializeField here used to have the field visible in the Unity Editor Inspector (private variables otherwise does not show)
+    [SerializeField]
+    private float _speed = 3.5f;
+    [SerializeField]
+    private GameObject _laserPrefab = null; //here set to null to avoid the warning in Unity
+    [SerializeField]
+    private float _fireRate = 0.2f;
+    private float _canFire = -1.0f;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        transform.position = new Vector3(0, 0, 0);
+    }
+
+    void Update()
+    {
+        CalculateMovement();
+
+        // if I hit the space key
+        // spawn GameObject
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        {
+            _canFire = Time.time + _fireRate;
+            // Instantiate(_laserPrefab, new Vector3(transform.position.x, transform.position.y + 0.8f), Quaternion.identity);
+            Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+        }
+    }
+
+    void CalculateMovement()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(direction * Time.deltaTime * _speed);
+
+        // using Clamping to set boundries (will not work when wrapping as done with the X axis)
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.5f, 4.5f));
+
+        if (transform.position.x >= 11.5f)
+        {
+            transform.position = new Vector3(-11.5f, transform.position.y, 0);
+        }
+        else if (transform.position.x <= -11.5f)
+        {
+            transform.position = new Vector3(11.5f, transform.position.y, 0);
+        }
+    }
+}
