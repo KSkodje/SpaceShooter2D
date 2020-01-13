@@ -1,0 +1,62 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+
+    [SerializeField]
+    private float _speed = 4.0f;
+
+
+    void Start()
+    {
+        transform.position = new Vector3(Random.Range(-9f, 9f), 7, 0);
+    }
+
+
+    void Update()
+    {
+        transform.Translate(Vector3.down * Time.deltaTime * _speed);
+
+        if (transform.position.y < -6.0f)
+        {
+            float randXpos = Random.Range(-9f, 9f);
+            transform.position = new Vector3(randXpos, 7, 0);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        string hitBy = other.tag;
+        // Debug.Log(other.gameObject);
+        // Debug.Log("Hit by: " + other.transform.name);
+
+        if (hitBy == "Player")
+        {
+            // Get component to access Object component
+            //other.transform.GetComponent<Player>().Damage();
+
+            // null checking
+            Player player = other.transform.GetComponent<Player>();
+            if (player)
+            {
+                player.Damage();
+            }
+            Destroy(this.gameObject);
+        }
+        else if (hitBy == "Laser")
+        {
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+        }
+
+        //if other is player
+        // damage player
+        // destroy us
+
+        // if other is  laser
+        // destroy laser
+        // destroy us
+    }
+}
