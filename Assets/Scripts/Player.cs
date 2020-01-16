@@ -302,13 +302,11 @@ public class Player : MonoBehaviour
         if (leftWingDamaged)
         {
             _playerHurtVisualizer[0].SetActive(false);
-            Debug.Log("Fixing left");
             return;
         }
         else if(rightWingDamaged)
         {
             _playerHurtVisualizer[1].SetActive(false);
-            Debug.Log("Fixing right");
             return;
         }
     }
@@ -345,7 +343,6 @@ public class Player : MonoBehaviour
                 HealthBoostHandler();
                 break;
             case 5: // add 10 to ammo
-                Debug.Log("Powerup Ammo");
                 AmmoHandler(10);
                 break;
             default:
@@ -382,7 +379,6 @@ public class Player : MonoBehaviour
 
     void AmmoHandler(int updateAmmoCount = -1)
     {
-        Debug.Log("Ammo handler add");
         if (_ammoCount < 0)
         {
             _ammoCount = 0;
