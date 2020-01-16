@@ -73,7 +73,6 @@
     <Compile Include="Assets\Scripts\Powerup.cs" />
     <Compile Include="Assets\Scripts\SpawnManager.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
-    <None Include="Assets\Materials 1\Shaders\Galaxy.shader" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/unity/Space_Shooter/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
