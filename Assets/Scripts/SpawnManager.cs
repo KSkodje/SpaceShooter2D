@@ -55,6 +55,10 @@ public class SpawnManager : MonoBehaviour
             {
                 _powerUpCounter = 0;
             }
+            else
+            {
+                _powerUpCounter++;
+            }
             Instantiate(powerups[randomPowerup], posToSpawn, Quaternion.identity);
         }
     }

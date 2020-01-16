@@ -113,7 +113,7 @@ public class UIManager : MonoBehaviour
     {
         // From http://wiki.unity3d.com/index.php/Camera_Shake
         // with some alterations
-        Debug.Log("Shaking the camera");
+        //Debug.Log("Shaking the camera");
         float shakeDuration = 2.0f;
         float startDuration = 1f;
         float smoothAmount = 100f;
