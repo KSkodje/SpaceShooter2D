@@ -8,11 +8,18 @@ public class Laser : MonoBehaviour
     private float _speed = 8.0f;
 
     private bool _isEnemyFire = false;
+    private bool _homing = false;
+
+    private GameObject _enemyTarget = null;
 
     void Update() {
         if (_isEnemyFire)
         {
             MoveDown();
+        }
+        else if (_homing)
+        {
+            HomingLaser();
         }
         else
         {
@@ -47,9 +54,37 @@ public class Laser : MonoBehaviour
         }
     }
 
+    void HomingLaser()
+    {
+
+        Transform _enemy = _enemyTarget.GetComponent<Transform>();
+        if (_enemy)
+        {
+            Vector3 targetPosition = _enemy.position - transform.position;
+            transform.Translate(targetPosition * Time.deltaTime * 1.5f);
+
+            if (!_enemy)
+            {
+                Destroy(this.gameObject);
+            }
+            float shotAliveDuration = 3.0f; // shots self destruct after 3 seconds
+            Destroy(this.gameObject, shotAliveDuration);
+        }
+        else
+        {
+            _homing = false;
+        }
+    }
+
     public void AssignEnemyLasers()
     {
         _isEnemyFire = true;
+    }
+
+    public void AssignHoming(GameObject targetEnemy)
+    {
+        _enemyTarget = targetEnemy;
+        _homing = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
