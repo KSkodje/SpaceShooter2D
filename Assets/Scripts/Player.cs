@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     private int _lives = 3;
     [SerializeField]
     private int _ammoCount = 15;
+    [SerializeField]
+    private int _maxAmmo = 30;
 
     [SerializeField]
     private bool _hasTripleShot = false;
@@ -82,7 +84,7 @@ public class Player : MonoBehaviour
         }
         //_spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();//nullcheck
         transform.position = new Vector3(0, -2, 0);
-        _uiManager.UpdateAmmo(_ammoCount);
+        _uiManager.UpdateAmmo(_ammoCount, _maxAmmo);
     }
 
     void Update()
@@ -386,9 +388,13 @@ public class Player : MonoBehaviour
         else
         {
             _ammoCount += updateAmmoCount;
+            if (_ammoCount > _maxAmmo)
+            {
+                _ammoCount = _maxAmmo;
+            }
         }
 
-        _uiManager.UpdateAmmo(_ammoCount);
+        _uiManager.UpdateAmmo(_ammoCount, _maxAmmo);
     }
 
     void HealthBoostHandler()

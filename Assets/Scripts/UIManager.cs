@@ -70,9 +70,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateAmmo(int ammoCount)
+    public void UpdateAmmo(int ammoCount, int maxAmmo)
     {
-        _ammoText.text = "Ammo: " + ammoCount;
+        _ammoText.text = "Ammo: " + ammoCount + "/" + maxAmmo;
         if(ammoCount < 5)
         {
             _ammoText.color = Color.red;
