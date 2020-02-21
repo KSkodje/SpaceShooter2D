@@ -9,6 +9,7 @@ public class Asteroid : MonoBehaviour
     [SerializeField]
     private GameObject _explosionPrefab = null;
     private SpawnManager _spawnManager = null;
+    private WaveManager _waveManager = null;
 
     void Start()
     {
@@ -16,6 +17,11 @@ public class Asteroid : MonoBehaviour
         if (!_spawnManager)
         {
             Debug.Log("Spawn Manager is Null");
+        }
+        _waveManager = GameObject.Find("WaveManager").GetComponent<WaveManager>();
+        if (!_waveManager)
+        {
+            Debug.LogError("Wave Manager is NULL");
         }
     }
 
@@ -31,7 +37,8 @@ public class Asteroid : MonoBehaviour
         {
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(collision.gameObject);
-            _spawnManager.StartSpawning();
+            //_spawnManager.StartSpawning(); // Pre wave implementation
+            _waveManager.StartWaves();
             Destroy(this.gameObject, 1f);
         }
     }
