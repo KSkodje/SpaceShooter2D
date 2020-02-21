@@ -8,14 +8,53 @@ public class Laser : MonoBehaviour
     private float _speed = 8.0f;
 
     private bool _isEnemyFire = false;
+    private bool _backwardsFire = false;
     private bool _homing = false;
+    private bool _sideways = false;
+    private char _dir;
+    private float _dirOffset = 0;
 
     private GameObject _enemyTarget = null;
+
+    private void Start()
+    {
+        if (_backwardsFire)
+        {
+            if (_sideways)
+            {
+                transform.position = new Vector3(transform.position.x + _dirOffset, transform.position.y, transform.position.z);
+            }
+            else
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y + 2.8f, transform.position.z);
+            }
+            _speed /= 2f;
+        }
+    }
 
     void Update() {
         if (_isEnemyFire)
         {
-            MoveDown();
+            if (_backwardsFire)
+            {
+                MoveUp();
+            }
+            else if (_sideways)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 90);
+                if (_dir == 'r')
+                {
+                    MoveDown();
+                }
+                if(_dir == 'l')
+                {
+                    MoveUp();
+                }
+            }
+            else
+            {
+                MoveDown();
+            }
         }
         else if (_homing)
         {
@@ -30,27 +69,26 @@ public class Laser : MonoBehaviour
     void MoveUp()
     {
         transform.Translate(Vector3.up * Time.deltaTime * _speed);
-
-        if (transform.position.y > 8f)
-        {
-            if (transform.parent)
-            {
-                Destroy(this.transform.parent.gameObject);
-            }
-            Destroy(this.gameObject);
-        }
+        DestroyLasers();
     }
     void MoveDown()
     {
         transform.Translate(Vector3.down * Time.deltaTime * _speed);
+        DestroyLasers();
+    }
 
-        if (transform.position.y < -7f)
+    void DestroyLasers()
+    {
+        float posX = transform.position.x;
+        float posY = transform.position.y;
+        if (posX < -11f || posX > 11f || posY < -8 || posY > 8)
         {
             if (transform.parent)
             {
                 Destroy(this.transform.parent.gameObject);
             }
             Destroy(this.gameObject);
+
         }
     }
 
@@ -81,6 +119,35 @@ public class Laser : MonoBehaviour
         _isEnemyFire = true;
     }
 
+    public void EnemyBackwardsFire()
+    {
+        _isEnemyFire = true;
+        _backwardsFire = true;
+    }
+
+    public void SidewaysEnemy(char direction)
+    {
+        _isEnemyFire = true;
+        _sideways = true;
+        _dir = direction;
+    }
+
+    public void SidewaysAndBackwardsFire(char direction)
+    {
+        _dir = direction;
+        _isEnemyFire = true;
+        _sideways = true;
+        _backwardsFire = true;
+        if (direction == 'l')
+        {
+            _dirOffset = 2.8f;
+        }
+        else if(direction == 'r')
+        {
+            _dirOffset = -2.8f;
+        }
+    }
+
     public void AssignHoming(GameObject targetEnemy)
     {
         _enemyTarget = targetEnemy;
@@ -96,6 +163,12 @@ public class Laser : MonoBehaviour
             {
                 player.Damage();
             }
+            if (transform.parent)
+            {
+                Destroy(this.transform.parent.gameObject);
+            }
+            Destroy(this.gameObject);
         }
     }
+
 }

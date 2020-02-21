@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // SerializeField here used to have the field visible in the Unity Editor Inspector (private variables otherwise does not show)
     [SerializeField]
     private float _setSpeed = 3.5f;
     [SerializeField]
@@ -28,6 +27,8 @@ public class Player : MonoBehaviour
     private bool _hasShield = false;
     [SerializeField]
     private bool _hasHomingShot = false;
+    [SerializeField]
+    private bool _hasHomingMissile = false;
 
     // Prefabs and links
     [SerializeField]
@@ -36,8 +37,8 @@ public class Player : MonoBehaviour
     private GameObject _tripleShotPrefab = null;
     [SerializeField]
     private GameObject _homingShotPrefab = null;
-    //[SerializeField]
-    //private GameObject _playerShieldPrefab = null;
+    [SerializeField]
+    private GameObject _homingMissilePrefab = null;
     [SerializeField]
     private SpawnManager _spawnManager = null;
     [SerializeField]
@@ -59,7 +60,7 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private int _score = 0;
-    private int _previousDamage = -1; // set to -1 - changes when taking damage to randomize which wing gets the damage
+    private int _previousDamage = -1; // set to -1. Changes when taking damage to randomize which wing gets the damage
 
     [SerializeField]
     private AudioClip _laserShotSound = null;
@@ -83,8 +84,9 @@ public class Player : MonoBehaviour
             Debug.Log("UIManager is Null");
         }
         //_spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();//nullcheck
-        transform.position = new Vector3(0, -2, 0);
+        transform.position = new Vector3(0, -4, 0);
         _uiManager.UpdateAmmo(_ammoCount, _maxAmmo);
+        _uiManager.UpdateScore(_score);
     }
 
     void Update()
@@ -132,10 +134,10 @@ public class Player : MonoBehaviour
             if(_currentThrusterFuel < 0)
             {
                 _currentThrusterFuel = 0;
+                _thrusterActivated = false;
                 _thruster.SetActive(false);
                 thrusterDisabled = true;
             }
-            
         }
         else if (!_thrusterActivated || thrusterDisabled)
         {
@@ -198,6 +200,10 @@ public class Player : MonoBehaviour
         if (_hasTripleShot)
         {
             Instantiate(_tripleShotPrefab, transform.position + new Vector3(0.5f, 0.82f, 0), Quaternion.identity);
+        }
+        else if (_hasHomingMissile)
+        {
+            Instantiate(_homingMissilePrefab, transform.position + new Vector3(0.5f, 0.82f, 0), Quaternion.identity);
         }
         else if (_hasHomingShot)
         {
@@ -327,25 +333,46 @@ public class Player : MonoBehaviour
             case 2:
                 _hasShield = true;
                 _shieldStrength = 3;
-                //_playerShield = Instantiate(_playerShieldPrefab, transform.position, Quaternion.identity);
-                //_playerShield.transform.parent = this.transform;
-
-                // this just actives the GameObject Shields placed under the Player transform (checks / unchecks it from view)
-                // probably a better solution than actually instantiating and then destroying gameobjects using a prefab
                 _shieldVisualizer.SetActive(true);
                 _shieldVisualizer.GetComponent<SpriteRenderer>().color = Color.white;
                 break;
             case 3:
                 _hasHomingShot = true;
-                // could add ammo as well
+                // could add ammo as well or have it not count ammo when using this
                 // on completion random enemy explodes
                 break;
+            case 4:
+                //homing missile
+                _hasHomingMissile = true;
+                break;
 
-            case 4: // health boost
+            case 5: // health boost
                 HealthBoostHandler();
                 break;
-            case 5: // add 10 to ammo
+            case 6: // add 10 to ammo
                 AmmoHandler(10);
+                break;
+            case 7: //Negative pickup
+                /*
+                 * Reduces speed and fire-rate
+                 * Removes powerups
+                 */
+
+                _thrusterActivated = false;
+                if (_hasSpeedBoost)
+                {
+                    // first removes speedboost before reducing to half speed
+                    // this to prevent any accumulation to result in a slower standard speed when it wears off
+                    _hasSpeedBoost = false;
+                    _setSpeed /= _speedMultiplier;
+                }
+                _setSpeed *= 0.5f;
+                _fireRate += 1.5f;
+                _hasShield = false;
+                _shieldVisualizer.SetActive(false);
+                _hasTripleShot = false;
+                _hasHomingShot = false;
+                _hasHomingMissile = false;
                 break;
             default:
                 Debug.Log("Power Up::Default value");
@@ -369,6 +396,13 @@ public class Player : MonoBehaviour
             case 3:
                 _spawnManager.RandomEnemySelfDestruct();
                 AddToScore(100);
+                break;
+            case 4:
+                _hasHomingMissile = false;
+                break;
+            case 7:
+                _setSpeed /= 0.5f;
+                _fireRate -= 1.5f;
                 break;
         }
     }
@@ -401,7 +435,7 @@ public class Player : MonoBehaviour
     {
         if (_lives == 3)
         {
-            // Do nothing
+            return;
         }
         else
         {

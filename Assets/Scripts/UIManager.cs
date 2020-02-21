@@ -24,7 +24,10 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private Image _thrusterBar = null;
-
+    [SerializeField]
+    private Image _bossHealthBar = null;
+    [SerializeField]
+    private Text _bossText = null;
 
     void Start()
     {
@@ -83,7 +86,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void GameOverSequence()
+    public void GameOverSequence()
     {
         _gameManager.GameOver();
         _gameOverText.gameObject.SetActive(true);
@@ -109,11 +112,31 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void DisplayBossHealth(bool showBossHealthbar)
+    {
+        if (showBossHealthbar == true)
+        {
+            _bossText.gameObject.SetActive(true);
+            _bossHealthBar.gameObject.SetActive(true);
+        }
+        else
+        {
+            _bossText.gameObject.SetActive(false);
+            _bossHealthBar.gameObject.SetActive(false);
+        }
+        
+    }
+
+    public void UpdateBossHealth(float currentHealth, float maxHealth)
+    {
+        float amountToFill = (currentHealth / maxHealth);
+        _bossHealthBar.fillAmount = amountToFill;
+    }
+
     public IEnumerator CameraShake()
     {
         // From http://wiki.unity3d.com/index.php/Camera_Shake
         // with some alterations
-        //Debug.Log("Shaking the camera");
         float shakeDuration = 2.0f;
         float startDuration = 1f;
         float smoothAmount = 100f;
